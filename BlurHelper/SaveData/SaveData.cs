@@ -2,8 +2,11 @@
 {
     public sealed class SaveData
     {
-        public uint FrameIndex = 0;
+        #region Public Variables
+        public readonly uint FrameIndex = 0;
         public System.Collections.Generic.List<KeyFrame> KeyFrames = new System.Collections.Generic.List<KeyFrame>();
+        #endregion
+        #region Public Constructors
         public SaveData(uint frameIndex, System.Collections.Generic.List<KeyFrame> keyFrames)
         {
             FrameIndex = frameIndex;
@@ -20,35 +23,155 @@
             }
             KeyFrames = keyFrames;
         }
-        public BlurPath(string serializedData)
+        #endregion
+        #region Public Overrides
+        public override bool Equals(object obj)
         {
-            if (serializedData is null)
+            if (obj is null || obj.GetType() != typeof(SaveData))
             {
-                throw new System.Exception("serializedData cannot be null.");
+                return false;
             }
-            else if (serializedData is "")
+            SaveData a = (SaveData)obj;
+            if (FrameIndex != a.FrameIndex)
             {
-                throw new System.Exception("serializedData cannot be empty.");
+                return false;
             }
-            string[] valueStrings = serializedData.Split(';');
-            if (valueStrings.Length is 0)
+            if (KeyFrames is null != a.KeyFrames is null)
             {
-                throw new System.Exception("serializedData was invalid.");
+                return false;
             }
-            try
+            if (!(KeyFrames is null))
             {
-                FrameIndex = uint.Parse(valueStrings[0]);
-                KeyFrames = new System.Collections.Generic.List<KeyFrame>();
-                for (int i = 1; i < valueStrings.Length; i++)
+                if (KeyFrames.Count != a.KeyFrames.Count)
                 {
-                    KeyFrames.Add(new KeyFrame(valueStrings[i]));
+                    return false;
+                }
+                for (int i = 0; i < KeyFrames.Count; i++)
+                {
+                    if (KeyFrames[i] != b.KeyFrames[i])
+                    {
+                        return false;
+                    }
                 }
             }
-            catch
+            return true;
+        }
+        public override string ToString()
+        {
+            return $"BlurHelper.SaveData({FrameIndex}, {KeyFrames.Count})";
+        } 
+        #endregion
+        #region Public Opperators
+        public static bool operator ==(SaveData a, SaveData b)
+        {
+            if(a.FrameIndex != b.FrameIndex)
+            {
+                return false;
+            }
+            if (a.KeyFrames is null != b.KeyFrames is null)
+            {
+                return false;
+            }
+            if(!(a.KeyFrames is null))
+            {
+                if(a.KeyFrames.Count != b.KeyFrames.Count)
+                {
+                    return false;
+                }
+                for (int i = 0; i < a.KeyFrames.Count; i++)
+                {
+                    if (a.KeyFrames[i] != b.KeyFrames[i])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        public static bool operator !=(SaveData a, SaveData b)
+        {
+            if (a.FrameIndex != b.FrameIndex)
+            {
+                return true;
+            }
+            if (a.KeyFrames is null != b.KeyFrames is null)
+            {
+                return true;
+            }
+            if (!(a.KeyFrames is null))
+            {
+                if (a.KeyFrames.Count != b.KeyFrames.Count)
+                {
+                    return true;
+                }
+                for (int i = 0; i < a.KeyFrames.Count; i++)
+                {
+                    if (a.KeyFrames[i] != b.KeyFrames[i])
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        #endregion
+        #region Public Static Methods
+        public static KeyFrame Deserialize(string serializedString)
+        {
+            if (serializedString is null)
+            {
+                throw new System.Exception("serializedString cannot be null.");
+            }
+            else if (serializedString is "")
+            {
+                throw new System.Exception("serializedString cannot be empty.");
+            }
+            string[] valueStrings = serializedString.Split(';');
+
+            if (valueStrings.Length is 4)
+            {
+                try
+                {
+                    return new KeyFrame(uint.Parse(valueStrings[0]), double.Parse(valueStrings[1]), double.Parse(valueStrings[2]), double.Parse(valueStrings[3]), false);
+                }
+                catch
+                {
+                    throw new System.Exception("serializedData was invalid.");
+                }
+            }
+            else if (valueStrings.Length is 5)
+            {
+                if (!(valueStrings[4].ToLower() is "exitmarker"))
+                {
+                    throw new System.Exception("serializedData was invalid.");
+                }
+                try
+                {
+                    return new KeyFrame(uint.Parse(valueStrings[0]), double.Parse(valueStrings[1]), double.Parse(valueStrings[2]), double.Parse(valueStrings[3]), true);
+                }
+                catch
+                {
+                    throw new System.Exception("serializedData was invalid.");
+                }
+            }
+            else
             {
                 throw new System.Exception("serializedData was invalid.");
             }
         }
+        public static string Serialize(KeyFrame keyFrameData)
+        {
+            if (keyFrameData.ExitMarker)
+            {
+                return $"{keyFrameData.FrameIndex}:{keyFrameData.BlurPositionX}:{keyFrameData.BlurPositionY}:{keyFrameData.BlurSize}:ExitMarker;";
+            }
+            else
+            {
+                return $"{keyFrameData.FrameIndex}:{keyFrameData.BlurPositionX}:{keyFrameData.BlurPositionY}:{keyFrameData.BlurSize};";
+            }
+        }
+        #endregion
+
         public override string ToString()
         {
             string output = $"{FrameIndex};";
@@ -58,7 +181,6 @@
             }
             return output;
         }
-
         public FrameData GetFrameData(uint targetFrameID)
         {
             KeyFrame next = GetNextKeyFrame(targetFrameID, true);
@@ -87,7 +209,6 @@
                 return new FrameData(outputBlurPositionX, outputBlurPositionY, outputBlurSize);
             }
         }
-
         public KeyFrame GetNextKeyFrame(uint frameIndex, bool includeOverlaps)
         {
             KeyFrame closestMatch = null;
@@ -120,7 +241,6 @@
             }
             return closestMatch;
         }
-
         public void AddKeyFrame(KeyFrame keyFrame)
         {
             foreach (KeyFrame keyFrame in KeyFrames)

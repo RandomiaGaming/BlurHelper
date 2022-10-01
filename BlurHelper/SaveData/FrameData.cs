@@ -3,9 +3,9 @@
     public sealed class FrameData
     {
         #region Public Variables
-        public readonly double BlurPositionX;
-        public readonly double BlurPositionY;
-        public readonly double BlurSize;
+        public double BlurPositionX;
+        public double BlurPositionY;
+        public double BlurSize;
         #endregion
         #region Public Constructors
         public FrameData(double blurPositionX, double blurPositionY, double blurSize)
@@ -78,6 +78,10 @@
             else if (serializedString.Contains(";"))
             {
                 throw new System.Exception("serializedData was invalid.");
+            }
+            if (serializedString[serializedString.Length - 1] is '\n')
+            {
+                serializedString = serializedString.Substring(0, serializedString.Length - 1);
             }
             string[] valueStrings = serializedString.Split(':');
             if (valueStrings.Length is 3)

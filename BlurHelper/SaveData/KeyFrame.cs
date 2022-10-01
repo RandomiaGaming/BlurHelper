@@ -3,11 +3,11 @@
     public sealed class KeyFrame
     {
         #region Public Variables
-        public readonly uint FrameIndex;
-        public readonly double BlurPositionX;
-        public readonly double BlurPositionY;
-        public readonly double BlurSize;
-        public readonly bool ExitMarker;
+        public uint FrameIndex;
+        public double BlurPositionX;
+        public double BlurPositionY;
+        public double BlurSize;
+        public bool ExitMarker;
         #endregion
         #region Public Constructors
         public KeyFrame(uint frameIndex, double blurPositionX, double blurPositionY, double blurSize, bool exitMarker)
@@ -81,6 +81,10 @@
             else if (serializedString.Contains(";"))
             {
                 throw new System.Exception("serializedString was invalid.");
+            }
+            if (serializedString[serializedString.Length - 1] is '\n')
+            {
+                serializedString = serializedString.Substring(0, serializedString.Length - 1);
             }
             string[] valueStrings = serializedString.Split(':');
             if (valueStrings.Length is 4)
