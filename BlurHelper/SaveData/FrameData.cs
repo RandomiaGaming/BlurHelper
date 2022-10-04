@@ -3,39 +3,15 @@
     public sealed class FrameData
     {
         #region Public Variables
-        public double BlurPositionX;
-        public double BlurPositionY;
-        public double BlurSize;
+        public ushort BlurPositionX;
+        public ushort BlurPositionY;
+        public ushort BlurSize;
         #endregion
         #region Public Constructors
-        public FrameData(double blurPositionX, double blurPositionY, double blurSize)
+        public FrameData(ushort blurPositionX, ushort blurPositionY, ushort blurSize)
         {
-            if(blurPositionX is double.NaN)
-            {
-                throw new System.Exception("blurPositionX cannot be NaN.");
-            }
-            if(blurPositionX < 0 || blurPositionX > 1)
-            {
-                throw new System.Exception("blurPositionX must be between 0 and 1.");
-            }
             BlurPositionX = blurPositionX;
-            if (blurPositionY is double.NaN)
-            {
-                throw new System.Exception("blurPositionY cannot be NaN.");
-            }
-            if (blurPositionY < 0 || blurPositionY > 1)
-            {
-                throw new System.Exception("blurPositionY must be between 0 and 1.");
-            }
             BlurPositionY = blurPositionY;
-            if (blurSize is double.NaN)
-            {
-                throw new System.Exception("blurSize cannot be NaN.");
-            }
-            if (blurPositionX < 0 || blurPositionX > 1)
-            {
-                throw new System.Exception("blurSize must be between 0 and 1.");
-            }
             BlurSize = blurSize;
         }
         #endregion
@@ -75,20 +51,12 @@
             {
                 throw new System.Exception("serializedData cannot be empty.");
             }
-            else if (serializedString.Contains(";"))
-            {
-                throw new System.Exception("serializedData was invalid.");
-            }
-            if (serializedString[serializedString.Length - 1] is '\n')
-            {
-                serializedString = serializedString.Substring(0, serializedString.Length - 1);
-            }
             string[] valueStrings = serializedString.Split(':');
             if (valueStrings.Length is 3)
             {
                 try
                 {
-                    return new FrameData(double.Parse(valueStrings[0]), double.Parse(valueStrings[1]), double.Parse(valueStrings[2]));
+                    return new FrameData(ushort.Parse(valueStrings[0]), ushort.Parse(valueStrings[1]), ushort.Parse(valueStrings[2]));
                 }
                 catch
                 {
@@ -102,7 +70,7 @@
         }
         public static string Serialize(FrameData frameData)
         {
-            return $"{frameData.BlurPositionX}:{frameData.BlurPositionY}:{frameData.BlurSize};";
+            return $"{frameData.BlurPositionX}:{frameData.BlurPositionY}:{frameData.BlurSize}";
         }
         #endregion
     }

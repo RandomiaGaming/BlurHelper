@@ -40,6 +40,14 @@
   <PropertyGroup>
     <StartupObject>Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.8.0.1641, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.Framework.DesktopGL.3.8.0.1641\lib\net452\MonoGame.Framework.dll</HintPath>
@@ -50,28 +58,34 @@
   <ItemGroup>
     <Compile Include="BlurHelper\FrameExtraction\FrameExtractor.cs" />
     <Compile Include="BlurHelper\FrameExtraction\FrameFormat.cs" />
+    <Compile Include="BlurHelper\KeyframeEditor\BlurHelperGame.cs" />
     <Compile Include="BlurHelper\KeyframeEditor\Input\AxisQueryEvent.cs" />
-    <Compile Include="BlurHelper\KeyframeEditor\Input\InputHelper.cs" />
     <Compile Include="BlurHelper\KeyframeEditor\Input\ButtonQueryEvent.cs" />
+    <Compile Include="BlurHelper\KeyframeEditor\Input\InputHelper.cs" />
     <Compile Include="BlurHelper\KeyframeEditor\Input\VirtualAxis.cs" />
+    <Compile Include="BlurHelper\KeyframeEditor\Input\VirtualButton.cs" />
     <Compile Include="BlurHelper\MathHelper.cs" />
-    <Compile Include="BlurHelper\Renderrer\BlurRenderrer.cs" />
+    <Compile Include="BlurHelper\Renderrer\BlurRenderringHelper.cs" />
+    <Compile Include="BlurHelper\Renderrer\CPUHelper.cs" />
+    <Compile Include="BlurHelper\Renderrer\ProcessHelper.cs" />
+    <Compile Include="BlurHelper\Renderrer\ThreadingHelper.cs" />
     <Compile Include="BlurHelper\SaveData\SaveData.cs" />
     <Compile Include="BlurHelper\SaveData\FrameData.cs" />
     <Compile Include="BlurHelper\SaveData\KeyFrame.cs" />
-    <Compile Include="BlurHelper\SaveData\BlurPath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="BlurHelper\KeyframeEditor\Input\VirtualButton.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="LICENSE.md" />
+    <None Include="packages.config" />
+    <None Include="Properties\app.config" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
     <EmbeddedResource Include="BlurHelper\KeyframeEditor\Icons\ExitMarkerKeyFrame.png" />
     <EmbeddedResource Include="BlurHelper\KeyframeEditor\Icons\KeyFrame.png" />
     <EmbeddedResource Include="BlurHelper\KeyframeEditor\Icons\Selection.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Properties\app.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />

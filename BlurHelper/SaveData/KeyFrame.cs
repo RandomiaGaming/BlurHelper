@@ -4,42 +4,19 @@
     {
         #region Public Variables
         public uint FrameIndex;
-        public double BlurPositionX;
-        public double BlurPositionY;
-        public double BlurSize;
+        public ushort BlurPositionX;
+        public ushort BlurPositionY;
+        public ushort BlurSize;
         public bool ExitMarker;
         #endregion
         #region Public Constructors
-        public KeyFrame(uint frameIndex, double blurPositionX, double blurPositionY, double blurSize, bool exitMarker)
+        public KeyFrame(uint frameIndex, ushort blurPositionX, ushort blurPositionY, ushort blurSize, bool exitMarker)
         {
             FrameIndex = frameIndex;
-            if (blurPositionX is double.NaN)
-            {
-                throw new System.Exception("blurPositionX cannot be NaN.");
-            }
-            if (blurPositionX < 0 || blurPositionX > 1)
-            {
-                throw new System.Exception("blurPositionX must be between 0 and 1.");
-            }
             BlurPositionX = blurPositionX;
-            if (blurPositionY is double.NaN)
-            {
-                throw new System.Exception("blurPositionY cannot be NaN.");
-            }
-            if (blurPositionY < 0 || blurPositionY > 1)
-            {
-                throw new System.Exception("blurPositionY must be between 0 and 1.");
-            }
             BlurPositionY = blurPositionY;
-            if (blurSize is double.NaN)
-            {
-                throw new System.Exception("blurSize cannot be NaN.");
-            }
-            if (blurPositionX < 0 || blurPositionX > 1)
-            {
-                throw new System.Exception("blurSize must be between 0 and 1.");
-            }
             BlurSize = blurSize;
+            ExitMarker = exitMarker;
         }
         #endregion
         #region Public Overrides
@@ -78,20 +55,12 @@
             {
                 throw new System.Exception("serializedString cannot be empty.");
             }
-            else if (serializedString.Contains(";"))
-            {
-                throw new System.Exception("serializedString was invalid.");
-            }
-            if (serializedString[serializedString.Length - 1] is '\n')
-            {
-                serializedString = serializedString.Substring(0, serializedString.Length - 1);
-            }
             string[] valueStrings = serializedString.Split(':');
             if (valueStrings.Length is 4)
             {
                 try
                 {
-                    return new KeyFrame(uint.Parse(valueStrings[0]), double.Parse(valueStrings[1]), double.Parse(valueStrings[2]), double.Parse(valueStrings[3]), false);
+                    return new KeyFrame(uint.Parse(valueStrings[0]), ushort.Parse(valueStrings[1]), ushort.Parse(valueStrings[2]), ushort.Parse(valueStrings[3]), false);
                 }
                 catch
                 {
@@ -106,7 +75,7 @@
                 }
                 try
                 {
-                    return new KeyFrame(uint.Parse(valueStrings[0]), double.Parse(valueStrings[1]), double.Parse(valueStrings[2]), double.Parse(valueStrings[3]), true);
+                    return new KeyFrame(uint.Parse(valueStrings[0]), ushort.Parse(valueStrings[1]), ushort.Parse(valueStrings[2]), ushort.Parse(valueStrings[3]), true);
                 }
                 catch
                 {
@@ -122,11 +91,11 @@
         {
             if (keyFrameData.ExitMarker)
             {
-                return $"{keyFrameData.FrameIndex}:{keyFrameData.BlurPositionX}:{keyFrameData.BlurPositionY}:{keyFrameData.BlurSize}:ExitMarker;";
+                return $"{keyFrameData.FrameIndex}:{keyFrameData.BlurPositionX}:{keyFrameData.BlurPositionY}:{keyFrameData.BlurSize}:ExitMarker";
             }
             else
             {
-                return $"{keyFrameData.FrameIndex}:{keyFrameData.BlurPositionX}:{keyFrameData.BlurPositionY}:{keyFrameData.BlurSize};";
+                return $"{keyFrameData.FrameIndex}:{keyFrameData.BlurPositionX}:{keyFrameData.BlurPositionY}:{keyFrameData.BlurSize}";
             }
         }
         #endregion
