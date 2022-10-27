@@ -2,10 +2,9 @@
 {
     public static class BlurRenderringHelper
     {
-        public static void Render(string videoFrameDirectoryPath, string saveDataPath)
+        public static void Render(string inputFrameDirectoryPath, string outputFrameDirectoryPath, uint frameCount, System.Drawing.Size lowresSize, bool deleteSource, string saveDataPath)
         {
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
+            System.Console.WriteLine("Beginning opperation...");
 
             CPUHelper.SetAffinityHighest();
 
@@ -13,19 +12,15 @@
 
             SaveData saveData = SaveData.Deserialize(System.IO.File.ReadAllText(saveDataPath));
 
-            System.Drawing.Size lowresSize = new System.Drawing.Size(192, 108);
+            RenderFrameInputPacket[] parameters = new RenderFrameInputPacket[frameCount];
 
-            RenderFrameInputPacket[] parameters = new RenderFrameInputPacket[252433];
-
-            System.Console.WriteLine("Beginning opperation...");
-
-            for (int i = 0; i < 252433; i++)
+            for (uint i = 0; i < frameCount; i++)
             {
-                parameters[i].sourceFramePath = $"D:\\Frames\\{i}.png";
-                parameters[i].destinationFramePath = $"D:\\Renders\\{i}.png";
-                parameters[i].frameData = saveData.GetFrameData((uint)i);
+                parameters[i].sourceFramePath = $"{inputFrameDirectoryPath}\\{i + 1}.png";
+                parameters[i].destinationFramePath = $"{outputFrameDirectoryPath}\\{i + 1}.png";
+                parameters[i].frameData = saveData.GetFrameData(i);
                 parameters[i].lowresSize = lowresSize;
-                parameters[i].deleteSource = true;
+                parameters[i].deleteSource = deleteSource;
             }
 
             System.Console.WriteLine("Beginning render...");
@@ -43,11 +38,6 @@
                 System.Console.WriteLine($"Failed to render frame \"{parameter.sourceFramePath}\" due to exception \"{exception.Message}\". \"{completedParameterCount}\" of \"{totalParameterCount}\" complete.");
                 System.IO.File.WriteAllText(parameter.destinationFramePath + ".txt", $"Failed to render frame \"{parameter.sourceFramePath}\" due to exception \"{exception.Message}\". \"{completedParameterCount}\" of \"{totalParameterCount}\" complete.");
             }, 1, 100);
-
-            stopwatch.Stop();
-
-            System.Console.WriteLine(stopwatch.ElapsedTicks);
-            System.Console.ReadLine();
         }
         private struct RenderFrameInputPacket
         {
@@ -61,13 +51,14 @@
         {
             if (frameData is null)
             {
-                System.IO.File.Copy(sourceFramePath, destinationFramePath);
-
                 if (deleteSource)
                 {
-                    System.IO.File.Delete(sourceFramePath);
+                    System.IO.File.Move(sourceFramePath, destinationFramePath);
                 }
-
+                else
+                {
+                    System.IO.File.Copy(sourceFramePath, destinationFramePath);
+                }
                 return;
             }
 
